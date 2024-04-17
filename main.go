@@ -8,28 +8,27 @@ import (
 )
 
 type Post struct {
-	UserId string `json:"userId"`
+	UserId int    `json:"userId"`
 	Id     int    `json:"id"`
 	Title  string `json:"title"`
 	Body   string `json:"body"`
 }
 
-type Posts struct {
-	Post []Post `json:"post"`
-}
-
 func main() {
-	resp, error := http.Get("https://jsonplaceholder.typicode.com/posts")
-	if error != nil {
-		panic(error)
+	resp, err := http.Get("https://jsonplaceholder.typicode.com/posts")
+	if err != nil {
+		log.Fatal(err)
 	}
 	defer resp.Body.Close()
 
-	data := Posts{}
-	err := json.NewDecoder(resp.Body).Decode(&data)
-	if err == nil {
-		log.Println(err)
-		return
+	var posts []Post
+	err = json.NewDecoder(resp.Body).Decode(&posts)
+	if err != nil {
+		log.Fatal(err)
 	}
-	fmt.Println(data.Post)
+
+	// Accede a los elementos del array de posts
+	for _, post := range posts {
+		fmt.Printf("UserID: %d, ID: %d, Title: %s\n", post.UserId, post.Id, post.Title)
+	}
 }
